@@ -1,0 +1,16 @@
+<li class="nav-item">
+    <form method="POST" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <a style="cursor: pointer;" id="logoutAnchor" class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+    </form>
+</li>
+
+{% block scripts %}
+    <script>
+        document.getElementById('logoutAnchor')
+        .addEventListener('click', (e) => {
+            e.preventDefault();
+            e.target.parentElement.submit();
+        })
+    </script>
+{% endblock scripts %}

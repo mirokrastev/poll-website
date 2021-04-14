@@ -1,0 +1,21 @@
+body {
+    background-color: burlywood;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;
+    background-color: #193047;
+}
+
+.footer-link {
+    color: navajowhite;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: navajowhite;
+    text-decoration: underline;
+}

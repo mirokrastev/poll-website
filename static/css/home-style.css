@@ -1,0 +1,25 @@
+#landing {
+    text-align: center;
+
+    width: 30%;
+    height: 100px;
+
+    margin: auto;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    border: 1px solid red;
+    box-shadow: 0 0 10px 5px royalblue;
+}
+
+.landing-link {
+    text-decoration: none;
+    margin: 25px 20px auto;
+}
+
+.landing-link:hover {
+    text-decoration: underline;
+}

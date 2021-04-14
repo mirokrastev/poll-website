@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Poll{% endblock title %}
+
+{% block content %}
+    {% if has_voted %}
+        {% include 'poll/single-poll/cant_vote.html' %}
+    {% else %}
+        {% if request.user.is_authenticated %}
+            {% include 'poll/single-poll/can_vote.html' %}
+        {% else %}
+            {% include 'poll/single-poll/cant_vote.html' %}
+        {% endif %}
+    {% endif %}
+{% endblock content %}
+
+{% block scripts %}
+    <script type="module" src="{% static 'poll/js/single-poll-script.js' %}"></script>
+{% endblock %}

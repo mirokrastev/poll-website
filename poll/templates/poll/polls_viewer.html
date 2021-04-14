@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Poll Viewer{% endblock title %}
+
+{% block content %}
+    <div id="polls">
+        {% for poll in polls %}
+            <div class="poll">
+                <span>{{ poll.question }}</span>
+                <span>
+                    <a href="{% url 'poll:view_poll' poll.id poll %}">View Poll</a>
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

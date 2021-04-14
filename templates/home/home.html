@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock title %}
+
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/home-style.css' %}">
+{% endblock links %}
+
+{% block content %}
+    {% if request.user.is_authenticated %}
+        {% include 'home/logged_in.html' %}
+    {% else %}
+        {% include 'home/logged_out.html' %}
+    {% endif %}
+{% endblock content %}
