@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic.base import ContextMixin
-from poll.models import Answer, Vote, Question
+from poll.models import Answer, Vote, Poll
 from poll.forms import QuestionForm, answer_modelformset, PollForm, CommentForm
 from django.http import JsonResponse, Http404
 from utils.base import BaseRedirectFormView
@@ -20,7 +21,8 @@ class PollViewer(ContextMixin, View):
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'GET':
             raise Http404
-        self.polls = Question.objects.all()
+        # TODO: Paginate polls
+        self.polls = Poll.objects.all()
         return super().dispatch(self.request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -43,12 +45,14 @@ class CreatePoll(ContextMixin, View):
         formset = answer_modelformset(self.request.POST)
 
         if not form.is_valid() or not formset.is_valid():
+            # Passes the same forms to be rendered with errors
             form_kwargs = {'answer_formset': formset,
                            'question_form': form}
 
             return self.get(self.request, **form_kwargs)
 
         self.form_valid(form, formset)
+        return redirect('poll:poll_viewer')
 
     def form_valid(self, form, formset):
         form = form.save(commit=False)
@@ -63,7 +67,10 @@ class CreatePoll(ContextMixin, View):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        question_form = kwargs.get('question_form', QuestionForm)
+
+        # kwargs.get() is checking if there is form in kwargs. If not, instantiate new Form,
+        # else render the passed form.
+        question_form = kwargs.get('question_form', QuestionForm())
         answer_formset = kwargs.get('answer_formset', answer_modelformset(queryset=Answer.objects.none()))
 
         context.update({
@@ -77,12 +84,43 @@ class CreatePoll(ContextMixin, View):
 class SinglePollViewer(ContextMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # ORM Querying
+        self.poll = None
         self.queryset = None
         self.votes = None
+        self.user_vote = None
+
+        # Permission checks
+        self.is_trusted = False
+        self.has_voted = False
+        self.can_vote = False
 
     def dispatch(self, request, *args, **kwargs):
-        self.queryset = Answer.objects.filter(question_id=self.kwargs['poll_id'])
-        self.votes = Vote.objects.filter(answer__in=self.queryset)
+        if not self.request.method == 'GET':
+            raise Http404
+
+        # ORM Querying
+        try:
+            self.poll = Poll.objects.get(id=self.kwargs['poll_id'],
+                                         question=self.kwargs['poll'])
+
+            self.queryset = Answer.objects.filter(question_id=self.poll.id)
+            self.votes = Vote.objects.filter(answer__in=self.queryset)
+
+        except Poll.DoesNotExist:
+            raise Http404
+
+        # Permission checks
+        self.is_trusted = self.poll.user == self.request.user
+
+        try:
+            self.user_vote = self.votes.get(user=self.request.user)
+            self.has_voted = bool(self.user_vote)
+        except Vote.DoesNotExist:
+            pass
+
+        self.can_vote = self.request.user.is_authenticated and not self.has_voted
+
         return super().dispatch(self.request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -96,45 +134,59 @@ class SinglePollViewer(ContextMixin, View):
         context = self.get_context_data()
         return render(self.request, 'poll/single-poll/view_poll.html', context)
 
-    def post(self, request, *args, **kwargs):
-        option_id = int(self.request.POST['answers'][0])
-        option = self.queryset.get(id=option_id)
-        Vote.objects.create(answer=option, user=self.request.user)
-
     def get_context_data(self, **kwargs):
-        has_voted = False
-        try:
-            if self.request.user.is_authenticated:
-                has_voted = bool(self.votes.get(user=self.request.user))
-        except Vote.DoesNotExist:
-            pass
-
         context = super().get_context_data(**kwargs)
 
-        context.update({'poll_id': self.kwargs['poll_id'],
-                        'poll': self.kwargs['poll'],
-                        'has_voted': has_voted})
+        form = PollForm()
+        form.fields['answers'].queryset = self.queryset
 
-        if self.request.user.is_authenticated and not has_voted:
-            form = PollForm()
-            form.fields['answers'].queryset = self.queryset
+        context.update({'poll': self.poll,
+                        'answers': self.queryset,
+                        'can_vote': self.can_vote,
+                        'is_trusted': self.is_trusted,
+                        'form': form})
 
-            context.update({'form': form,
-                            'comment_form': CommentForm()})
+        if not self.can_vote:
+            form.fields['answers'].widget.attrs['disabled'] = True
+
+        if self.has_voted:
+            form.fields['answers'].initial = self.user_vote.answer.id
 
         return context
 
 
+class PollVote(View):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.poll = None
+        self.queryset = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.method == 'POST':
+            raise Http404
+        self.poll = Poll.objects.get(id=self.kwargs['poll_id'],
+                                     question=self.kwargs['poll'])
+        self.queryset = Answer.objects.filter(question_id=self.poll.id)
+        return super().dispatch(self.request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        option_id = int(self.request.POST['answers'][0])
+        option = self.queryset.get(id=option_id)
+        Vote.objects.create(answer=option, user=self.request.user)
+        return redirect(reverse('poll:view_poll', kwargs={'poll_id': self.poll.id,
+                                                          'poll': self.poll}))
+
+
 class PollComment(BaseRedirectFormView):
     form_class = CommentForm
-    success_url = 'poll:poll_view'
+    success_url = 'poll:view_poll'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.poll = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.poll = Question.objects.get(question_id=self.kwargs['poll_id'], question=self.kwargs['poll'])
+        self.poll = Poll.objects.get(question_id=self.kwargs['poll_id'], question=self.kwargs['poll'])
         return super().dispatch(self.request, *args, **kwargs)
 
     def form_valid(self, form):

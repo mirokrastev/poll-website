@@ -3,15 +3,21 @@
 
 {% block title %}Poll{% endblock title %}
 
+{% block links %}
+    <style>
+        #id_answers {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+{% endblock links %}
+
 {% block content %}
-    {% if has_voted %}
-        {% include 'poll/single-poll/cant_vote.html' %}
+    {% if can_vote %}
+        {% include 'poll/single-poll/can_vote.html' %}
     {% else %}
-        {% if request.user.is_authenticated %}
-            {% include 'poll/single-poll/can_vote.html' %}
-        {% else %}
-            {% include 'poll/single-poll/cant_vote.html' %}
-        {% endif %}
+        {% include 'poll/single-poll/cant_vote.html' %}
     {% endif %}
 {% endblock content %}
 

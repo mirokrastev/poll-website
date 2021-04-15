@@ -1,11 +1,11 @@
 from django import forms
-from poll.models import Question, Answer, Comment
+from poll.models import Poll, Answer, Comment
 from django.forms import modelformset_factory
 
 
 class QuestionForm(forms.ModelForm):
     class Meta:
-        model = Question
+        model = Poll
         fields = ('question',)
 
 
@@ -20,8 +20,9 @@ class AnswerForm(forms.ModelForm):
 
 
 class PollForm(forms.Form):
-    answers = forms.ModelChoiceField(queryset=Answer.objects.none())
-    # Give a queryset in views to answers field.
+    answers = forms.ModelChoiceField(queryset=Answer.objects.none(),
+                                     widget=forms.RadioSelect())
+    # Give a queryset in views to answers field
 
 
 # model formset for creating multiple Answer objects (used when creating a new Poll)
