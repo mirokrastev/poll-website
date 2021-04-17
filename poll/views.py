@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic.base import ContextMixin
+from poll.mixins import PollObjectMixin, InitializePollMixin
 from poll.models import Answer, Vote, Poll
 from poll.forms import QuestionForm, answer_modelformset, PollForm, CommentForm
 from django.http import JsonResponse, Http404
@@ -81,11 +82,11 @@ class CreatePoll(ContextMixin, View):
         return context
 
 
-class SinglePollViewer(ContextMixin, View):
+class SinglePollViewer(PollObjectMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ORM Querying
-        self.poll = None
+        self.object = None
         self.queryset = None
         self.votes = None
         self.user_vote = None
@@ -101,17 +102,16 @@ class SinglePollViewer(ContextMixin, View):
 
         # ORM Querying
         try:
-            self.poll = Poll.objects.get(id=self.kwargs['poll_id'],
-                                         question=self.kwargs['poll'])
+            self.object = self.get_object()
 
-            self.queryset = Answer.objects.filter(question_id=self.poll.id)
+            self.queryset = Answer.objects.filter(question_id=self.object.id)
             self.votes = Vote.objects.filter(answer__in=self.queryset)
 
         except Poll.DoesNotExist:
             raise Http404
 
         # Permission checks
-        self.is_trusted = self.poll.user == self.request.user
+        self.is_trusted = self.object.user == self.request.user
 
         try:
             self.user_vote = self.votes.get(user=self.request.user)
@@ -140,7 +140,7 @@ class SinglePollViewer(ContextMixin, View):
         form = PollForm()
         form.fields['answers'].queryset = self.queryset
 
-        context.update({'poll': self.poll,
+        context.update({'poll': self.object,
                         'answers': self.queryset,
                         'can_vote': self.can_vote,
                         'is_trusted': self.is_trusted,
@@ -155,44 +155,49 @@ class SinglePollViewer(ContextMixin, View):
         return context
 
 
-class PollVote(View):
+class PollVote(PollObjectMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.poll = None
+        self.object = None
         self.queryset = None
+        self.user_vote = None
+        self.has_voted = False
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'POST':
             raise Http404
-        self.poll = Poll.objects.get(id=self.kwargs['poll_id'],
-                                     question=self.kwargs['poll'])
-        self.queryset = Answer.objects.filter(question_id=self.poll.id)
+        self.object = self.get_object()
+        self.queryset = Answer.objects.filter(question_id=self.object.id)
         return super().dispatch(self.request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         option_id = int(self.request.POST['answers'][0])
         option = self.queryset.get(id=option_id)
         Vote.objects.create(answer=option, user=self.request.user)
-        return redirect(reverse('poll:view_poll', kwargs={'poll_id': self.poll.id,
-                                                          'poll': self.poll}))
+        return redirect(reverse('poll:view_poll', kwargs={'poll_id': self.object.id,
+                                                          'poll': self.object}))
 
 
-class PollComment(BaseRedirectFormView):
+class PollComment(InitializePollMixin, BaseRedirectFormView):
     form_class = CommentForm
     success_url = 'poll:view_poll'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.poll = None
-
-    def dispatch(self, request, *args, **kwargs):
-        self.poll = Poll.objects.get(question_id=self.kwargs['poll_id'], question=self.kwargs['poll'])
-        return super().dispatch(self.request, *args, **kwargs)
 
     def form_valid(self, form):
         form = form.save(commit=False)
         form.user = self.request.user
-        form.answer = self.poll
+        form.answer = self.object
         form.save()
         return self.redirect(redirect_kwargs={'poll': self.kwargs['poll'],
                                               'poll_id': self.kwargs['poll_id']})
+
+
+class PollDelete(InitializePollMixin, View):
+    admin_only = True
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return render(self.request, 'poll/single-poll/delete.html', context)
+
+    def post(self, request, *args, **kwargs):
+        self.object.delete()
+        return redirect('poll:poll_viewer')

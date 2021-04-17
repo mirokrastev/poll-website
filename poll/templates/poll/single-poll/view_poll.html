@@ -14,11 +14,23 @@
 {% endblock links %}
 
 {% block content %}
-    {% if can_vote %}
-        {% include 'poll/single-poll/can_vote.html' %}
-    {% else %}
-        {% include 'poll/single-poll/cant_vote.html' %}
-    {% endif %}
+    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+        <div id="pollName" class="card-header">{{ poll }}</div>
+        <div class="card-body">
+            {% if can_vote %}
+                {% include 'poll/single-poll/can_vote.html' %}
+            {% else %}
+                {% include 'poll/single-poll/cant_vote.html' %}
+            {% endif %}
+        </div>
+
+        <div id="options" class="text-center">
+            <button id="percent">Percents</button>
+            {% if is_trusted %}
+                {% include 'poll/single-poll/trusted-settings.html' %}
+            {% endif %}
+        </div>
+    </div>
 {% endblock content %}
 
 {% block scripts %}

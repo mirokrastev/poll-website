@@ -7,6 +7,9 @@
                 <a class="landing-link" href="{% url 'poll:poll_viewer' %}">Polls</a>
             </span>
         <span>
+            <a class="landing-link" href="{% url 'accounts:my_polls' request.user %}">My Polls</a>
+        </span>
+        <span>
                 <a class="landing-link" href="{% url 'poll:create_poll' %}">Create Poll</a>
             </span>
     </div>

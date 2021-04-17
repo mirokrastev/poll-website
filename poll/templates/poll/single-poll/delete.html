@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Poll Deletion{% endblock title %}
+
+{% block content %}
+    <div class="justify-content-center">
+        <p>Are you sure you want to delete this Poll?</p>
+        <p>It's irreversible!</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button>Delete</button>
+        </form>
+        <a href="{% url 'poll:view_poll' poll.id poll %}"><button>Back</button></a>
+    </div>
+{% endblock content %}

@@ -1,14 +1,7 @@
-<div>
-    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-        <div id="pollName" class="card-header">{{ poll }}</div>
-        <div class="card-body">
-            <div id="pollAnswers">
-                <form method="POST" action="{% url 'poll:vote_poll' poll.id poll %}">
-                    {% csrf_token %}
-                    {{ form }}
-                    <button>Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>
+<div id="pollAnswers">
+    <form method="POST" action="{% url 'poll:vote_poll' poll.id poll %}">
+        {% csrf_token %}
+        {{ form }}
+        <button>Submit</button>
+    </form>
 </div>
