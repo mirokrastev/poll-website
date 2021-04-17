@@ -8,7 +8,5 @@ Other registered users can view and vote on particular answer.<br><br>
 Also there is a feature for Comments under the Poll, but it's not done yet.
 
 ## TODO
-* My profile page
-* Full CRUD over My Polls
 * Add Comments functionality
 * Better Front-End
