@@ -103,22 +103,15 @@ class SinglePollViewer(PollObjectMixin, View):
         # ORM Querying
         try:
             self.object = self.get_object()
-
             self.queryset = Answer.objects.filter(question_id=self.object.id)
             self.votes = Vote.objects.filter(answer__in=self.queryset)
-
         except Poll.DoesNotExist:
             raise Http404
 
         # Permission checks
         self.is_trusted = self.object.user == self.request.user
-
-        try:
-            self.user_vote = self.votes.get(user=self.request.user)
-            self.has_voted = bool(self.user_vote)
-        except Vote.DoesNotExist:
-            pass
-
+        self.user_vote = self.votes.model.objects.get_or_none(user=self.request.user)
+        self.has_voted = bool(self.user_vote)
         self.can_vote = self.request.user.is_authenticated and not self.has_voted
 
         return super().dispatch(self.request, *args, **kwargs)
@@ -152,6 +145,9 @@ class SinglePollViewer(PollObjectMixin, View):
         if self.has_voted:
             form.fields['answers'].initial = self.user_vote.answer.id
 
+        if self.request.user.is_authenticated:
+            context.update({'comment_form': CommentForm()})
+
         return context
 
 
@@ -161,13 +157,19 @@ class PollVote(PollObjectMixin, View):
         self.object = None
         self.queryset = None
         self.user_vote = None
-        self.has_voted = False
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'POST':
             raise Http404
         self.object = self.get_object()
         self.queryset = Answer.objects.filter(question_id=self.object.id)
+
+        self.user_vote = Answer.objects.get_or_none(question__id=self.object.id,
+                                                    user=self.request.user)
+
+        if self.user_vote:
+            raise Http404
+
         return super().dispatch(self.request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
