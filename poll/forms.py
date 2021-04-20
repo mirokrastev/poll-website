@@ -31,6 +31,13 @@ answer_modelformset = modelformset_factory(model=Answer, form=AnswerForm,
 
 
 class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['comment'].widget.attrs.update({
+            'class': 'form-control',
+            'rows': '3'
+        })
+
     class Meta:
         model = Comment
         fields = ('comment',)

@@ -14,21 +14,43 @@
 {% endblock links %}
 
 {% block content %}
-    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;margin: 30px auto;">
-        <div id="pollName" class="card-header">{{ poll }}</div>
-        <div class="card-body">
-            {% if can_vote %}
-                {% include 'poll/single-poll/can_vote.html' %}
-            {% else %}
-                {% include 'poll/single-poll/cant_vote.html' %}
-            {% endif %}
-        </div>
+    <div id="poll">
+        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;margin: 30px auto;">
+            <div id="pollName" class="card-header">{{ poll }}</div>
+            <div class="card-body">
+                {% if can_vote %}
+                    {% include 'poll/single-poll/can_vote.html' %}
+                {% else %}
+                    {% include 'poll/single-poll/cant_vote.html' %}
+                {% endif %}
+            </div>
 
-        <div id="options" class="text-center">
-            <button id="percent">Percents</button>
-            {% if is_trusted %}
-                {% include 'poll/single-poll/trusted-settings.html' %}
-            {% endif %}
+            <div id="options" class="text-center">
+                <button id="percent">Percents</button>
+                {% if is_trusted %}
+                    {% include 'poll/single-poll/trusted-settings.html' %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div id="comments">
+        {% if comment_form %}
+            <div class="form-group">
+                <form method="POST" action="{% url 'poll:comment_poll' poll.id poll %}">
+                    {% csrf_token %}
+                    {{ comment_form }}
+                    <br>
+                    <button type="button" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        {% endif %}
+        <div class="comment">
+            {% for comment in comments %}
+                <span>
+                {{ comment.user }}: {{ comment.comment }}
+                </span>
+            {% endfor %}
         </div>
     </div>
 {% endblock content %}
