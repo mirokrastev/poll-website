@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
+from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
 from poll.mixins import PollObjectMixin, InitializePollMixin
 from poll.models import Answer, Vote, Poll, Comment
@@ -14,26 +15,11 @@ class HomeView(View):
         return render(self.request, 'home/home.html')
 
 
-class PollViewer(ContextMixin, View):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.polls = None
-
-    def dispatch(self, request, *args, **kwargs):
-        if not self.request.method == 'GET':
-            raise Http404
-        # TODO: Paginate polls
-        self.polls = Poll.objects.all()
-        return super().dispatch(self.request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return render(self.request, 'poll/polls_viewer.html', context)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['polls'] = self.polls
-        return context
+class PollViewer(ListView):
+    paginate_by = 10
+    model = Poll
+    template_name = 'poll/polls_viewer.html'
+    context_object_name = 'polls'
 
 
 class CreatePoll(ContextMixin, View):

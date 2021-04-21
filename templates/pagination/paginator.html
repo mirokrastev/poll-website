@@ -1,0 +1,22 @@
+{% if page_obj.has_other_pages %}
+    <ul class="pagination justify-content-center">
+        {% include 'pagination/previous_page.html' %}
+
+        {% for page in paginator.page_range %}
+            {% if page_obj.number == page %}
+                <li class="active page-item">
+                    <a class="page-link">{{ page }}</a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="?page={{ page }}">
+                        {{ page }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% include 'pagination/next_page.html' %}
+    </ul>
+{% endif %}

@@ -18,6 +18,11 @@
                         </span>
                     </div>
                 {% endfor %}
+                {% if is_paginated %}
+                    <div>
+                    {% include 'pagination/paginator.html' %}
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
     </div>
