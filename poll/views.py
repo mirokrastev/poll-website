@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
+from django.views.generic.edit import DeleteView
 from poll.mixins import PollObjectMixin, InitializePollMixin
 from poll.models import Answer, Vote, Poll, Comment
 from poll.forms import QuestionForm, answer_modelformset, PollForm, CommentForm
@@ -189,13 +190,7 @@ class PollComment(InitializePollMixin, BaseRedirectFormView):
                                               'poll_id': self.kwargs['poll_id']})
 
 
-class PollDelete(InitializePollMixin, View):
+class PollDelete(InitializePollMixin, DeleteView):
     admin_only = True
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return render(self.request, 'poll/single-poll/delete.html', context)
-
-    def post(self, request, *args, **kwargs):
-        self.object.delete()
-        return redirect('poll:poll_viewer')
+    success_url = reverse_lazy('poll:poll_viewer')
+    template_name = 'poll/single-poll/delete.html'
