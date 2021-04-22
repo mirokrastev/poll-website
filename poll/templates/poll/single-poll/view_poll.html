@@ -41,15 +41,15 @@
                     {% csrf_token %}
                     {{ comment_form }}
                     <br>
-                    <button type="button" class="btn btn-primary">Submit</button>
+                    <button class="btn btn-primary">Submit</button>
                 </form>
             </div>
         {% endif %}
         <div class="comment">
             {% for comment in comments %}
-                <span>
+                <div>
                 {{ comment.user }}: {{ comment.comment }}
-                </span>
+                </div>
             {% endfor %}
         </div>
     </div>
