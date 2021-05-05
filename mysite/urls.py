@@ -22,6 +22,11 @@ urlpatterns = [
 
     path('', HomeView.as_view(), name='home'),
 
+    # API url includes
+    path('api/accounts/', include('accounts.api.urls', namespace='api-accounts')),
+    path('api/poll/', include('poll.api.urls', namespace='api-poll')),
+
+    # Template url includes
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('poll/', include('poll.urls', namespace='poll'))
 ]
