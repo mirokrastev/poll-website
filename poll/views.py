@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import DeleteView
+from poll.common import PollDataMixin
 from poll.mixins import PollObjectMixin, InitializePollMixin
 from poll.models import Answer, Vote, Poll, Comment
 from poll.forms import QuestionForm, answer_modelformset, PollForm, CommentForm
@@ -69,7 +70,7 @@ class CreatePoll(ContextMixin, View):
         return context
 
 
-class SinglePollViewer(PollObjectMixin, View):
+class SinglePollViewer(PollObjectMixin, PollDataMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ORM Querying
@@ -110,10 +111,7 @@ class SinglePollViewer(PollObjectMixin, View):
 
     def get(self, request, *args, **kwargs):
         if self.request.GET.get('ajax', None) == 'true':
-            percent_obj = {}
-            for answer in self.queryset:
-                votes = self.votes.filter(answer=answer)
-                percent_obj[str(answer)] = (len(votes), (len(votes) * 100) / (len(self.votes) or 1))
+            percent_obj = self.get_answer_json()
             return JsonResponse(percent_obj)
 
         context = self.get_context_data()

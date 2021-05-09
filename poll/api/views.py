@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from poll.api.serializers import PollSerializer
-from poll.models import Poll, Answer
+from poll.common import PollDataMixin
+from poll.models import Poll, Answer, Vote
 
 
 class APIPollViewer(ListModelMixin,
@@ -17,22 +18,26 @@ class APIPollViewer(ListModelMixin,
         return self.list(request, *args, **kwargs)
 
 
-class APIViewPoll(APIView):
+class APIViewPoll(PollDataMixin, APIView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.object = None
-        self.answers = None
+        self.queryset = None
+        self.votes = None
 
     def dispatch(self, request, *args, **kwargs):
         self.object = Poll.objects.get(id=self.kwargs['poll_id'],
                                        question=self.kwargs['poll'])
-        self.answers = Answer.objects.filter(question=self.object)
+        self.queryset = Answer.objects.filter(question_id=self.object.id)
+        self.votes = Vote.objects.filter(answer__in=self.queryset)
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        data = {'question': self.object.question,
-                'answers': {
-                    num: str(value)
-                    for num, value in enumerate(self.answers, start=1)
-                }}
+        data = {'question': self.object.question}
+        answers_dict = self.get_answer_json()
+        for key in answers_dict:
+            answers_dict[key] = (f'Votes: {answers_dict[key][0]}',
+                                 f'Percents: {answers_dict[key][1]}')
+
+        data.update(answers_dict)
         return Response(data=data, status=status.HTTP_200_OK)
