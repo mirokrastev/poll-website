@@ -4,13 +4,7 @@
 {% block title %}Poll{% endblock title %}
 
 {% block links %}
-    <style>
-        #id_answers {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'poll/css/single-poll-style.css' %}">
 {% endblock links %}
 
 {% block content %}
@@ -26,7 +20,7 @@
             </div>
 
             <div id="options" class="text-center">
-                <button id="percent">Percents</button>
+                <button id="percent" class="btn btn-primary">Percents</button>
                 {% if is_trusted %}
                     {% include 'poll/single-poll/trusted-settings.html' %}
                 {% endif %}
@@ -36,7 +30,7 @@
 
     <div id="comments">
         {% if comment_form %}
-            <div class="form-group">
+            <div id="comment-form" class="form-group">
                 <form method="POST" action="{% url 'poll:comment_poll' poll.id poll %}">
                     {% csrf_token %}
                     {{ comment_form }}

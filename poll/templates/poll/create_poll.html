@@ -3,25 +3,31 @@
 
 {% block title %}Create Poll{% endblock title %}
 
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'poll/css/create-poll-style.css' %}">
+{% endblock links %}
+
 {% block content %}
-    <div class="text-center" style="margin: 50px;">
+    <span id="create-poll">
         <form method="POST">
             {% csrf_token %}
             {{ question_form }}
-            <div id="answers">
-                <div id="management">
+            <span id="answers">
+                <span id="management">
                     {{ answer_formset.management_form }}
-                </div>
-                <div id="fields">
+                </span>
+                <span id="fields">
                     {% for form in answer_formset %}
                         {{ form }}
                     {% endfor %}
-                </div>
-            </div>
-            <button id="add-form-btn">Add another Answer</button>
-            <button>Submit</button>
+                </span>
+            </span>
+            <span class="buttons">
+                <button id="add-form-btn">Add another Answer</button>
+                <button>Submit</button>
+            </span>
         </form>
-    </div>
+    </span>
 {% endblock content %}
 
 {% block scripts %}

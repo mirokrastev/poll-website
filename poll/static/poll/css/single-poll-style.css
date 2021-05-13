@@ -1,0 +1,20 @@
+#id_answers {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#options {
+    padding-bottom: 20px;
+}
+
+#comments {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+#comment-form {
+    margin: auto;
+    width: 500px;
+}

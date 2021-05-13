@@ -33,11 +33,11 @@ class APIViewPoll(PollDataMixin, APIView):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        data = {'question': self.object.question}
-        answers_dict = self.get_answer_json()
-        for key in answers_dict:
-            answers_dict[key] = (f'Votes: {answers_dict[key][0]}',
-                                 f'Percents: {answers_dict[key][1]}')
+        data = {'question': self.object.question,
+                'answers': self.get_answer_json()}
 
-        data.update(answers_dict)
+        for key in data['answers']:
+            data['answers'][key] = {'votes': data['answers'][key][0],
+                                    'percents': data['answers'][key][1]}
+
         return Response(data=data, status=status.HTTP_200_OK)
