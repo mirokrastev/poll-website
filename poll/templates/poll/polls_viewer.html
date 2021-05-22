@@ -12,7 +12,7 @@
             {% else %}
                 {% for poll in polls %}
                     <div class="poll">
-                        <span>{{ poll.question }}</span>
+                        <span>{{ poll }}</span>
                         <span>
                             <a href="{% url 'poll:view_poll' poll.id poll %}">View Poll</a>
                         </span>

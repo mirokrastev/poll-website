@@ -4,11 +4,11 @@ from django.views import View
 from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import DeleteView
-from poll.common import PollDataMixin
+from poll.common import PollDataMixin, PollTrackUsersMixin
 from poll.mixins import PollObjectMixin, InitializePollMixin
-from poll.models import Answer, Vote, Poll, Comment
-from poll.forms import QuestionForm, answer_modelformset, PollForm, CommentForm
+from poll.forms import PollForm, answer_modelformset, CommentForm, VoteForm
 from django.http import JsonResponse, Http404
+from poll.models.poll_models import Poll, Answer, Vote, Comment
 from utils.base import BaseRedirectFormView
 
 
@@ -30,7 +30,7 @@ class CreatePoll(ContextMixin, View):
         return render(self.request, 'poll/create_poll.html', context)
 
     def post(self, request, *args, **kwargs):
-        form = QuestionForm(self.request.POST)
+        form = PollForm(self.request.POST)
         formset = answer_modelformset(self.request.POST)
 
         if not form.is_valid() or not formset.is_valid():
@@ -51,7 +51,7 @@ class CreatePoll(ContextMixin, View):
         form.save()
 
         for sub_form in formset:
-            sub_form.question = form
+            sub_form.poll = form
         Answer.objects.bulk_create(formset)
 
     def get_context_data(self, **kwargs):
@@ -59,7 +59,7 @@ class CreatePoll(ContextMixin, View):
 
         # kwargs.get() is checking if there is form in kwargs. If not, instantiate new Form,
         # else render the passed form.
-        question_form = kwargs.get('question_form', QuestionForm())
+        question_form = kwargs.get('question_form', PollForm())
         answer_formset = kwargs.get('answer_formset', answer_modelformset(queryset=Answer.objects.none()))
 
         context.update({
@@ -70,7 +70,7 @@ class CreatePoll(ContextMixin, View):
         return context
 
 
-class SinglePollViewer(PollObjectMixin, PollDataMixin, View):
+class SinglePollViewer(PollObjectMixin, PollTrackUsersMixin, PollDataMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # ORM Querying
@@ -92,12 +92,12 @@ class SinglePollViewer(PollObjectMixin, PollDataMixin, View):
         # ORM Querying
         try:
             self.object = self.get_object()
-            self.queryset = Answer.objects.filter(question_id=self.object.id)
+            self.queryset = Answer.objects.filter(poll_id=self.object.id)
             self.votes = Vote.objects.filter(answer__in=self.queryset)
         except Poll.DoesNotExist:
             raise Http404
 
-        self.comments = Comment.objects.filter(question=self.object)
+        self.comments = Comment.objects.filter(poll=self.object)
 
         # Permission checks
         if self.request.user.is_authenticated:
@@ -120,7 +120,7 @@ class SinglePollViewer(PollObjectMixin, PollDataMixin, View):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        form = PollForm()
+        form = VoteForm()
         form.fields['answers'].queryset = self.queryset
 
         context.update({'poll': self.object,
@@ -153,7 +153,7 @@ class PollVote(PollObjectMixin, View):
         if not self.request.method == 'POST':
             raise Http404
         self.object = self.get_object()
-        self.queryset = Answer.objects.filter(question_id=self.object.id)
+        self.queryset = Answer.objects.filter(poll_id=self.object.id)
         self.user_vote = Vote.objects.get_or_none(answer__in=self.queryset,
                                                   user=self.request.user)
 
@@ -182,7 +182,7 @@ class PollComment(InitializePollMixin, BaseRedirectFormView):
     def form_valid(self, form):
         form = form.save(commit=False)
         form.user = self.request.user
-        form.question = self.object
+        form.poll = self.object
         form.save()
         return self.redirect(redirect_kwargs={'poll': self.kwargs['poll'],
                                               'poll_id': self.kwargs['poll_id']})

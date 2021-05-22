@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.base import ContextMixin
-from poll.models import Poll
+from poll.models.poll_models import Poll
 from django.http import Http404
 
 

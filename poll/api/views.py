@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from poll.api.serializers import PollSerializer
 from poll.common import PollDataMixin
-from poll.models import Poll, Answer, Vote
+from poll.models.poll_models import Poll, Answer, Vote
 
 
 class APIPollViewer(ListModelMixin,
