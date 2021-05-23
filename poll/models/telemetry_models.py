@@ -20,3 +20,7 @@ class UserPollTelemetry(BasePollTelemetry):
 
     def __str__(self):
         return str(self.poll)
+
+    class Meta:
+        verbose_name = 'Telemetry'
+        verbose_name_plural = 'Telemetry'

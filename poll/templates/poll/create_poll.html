@@ -5,13 +5,25 @@
 
 {% block links %}
     <link rel="stylesheet" type="text/css" href="{% static 'poll/css/create-poll-style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tooltip-style.css' %}">
 {% endblock links %}
 
 {% block content %}
     <span id="create-poll">
         <form method="POST">
             {% csrf_token %}
-            {{ question_form }}
+            {% for field in question_form %}
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.help_text %}
+                    <span class="help">
+                        <span class="helper-identifier">i</span>
+                        <span class="helper-text">{{ field.help_text|safe }}</span>
+                    </span>
+                    <br>
+                {% endif %}
+            {% endfor %}
+
             <span id="answers">
                 <span id="management">
                     {{ answer_formset.management_form }}
@@ -22,10 +34,12 @@
                     {% endfor %}
                 </span>
             </span>
+
             <span class="buttons">
                 <button id="add-form-btn">Add another Answer</button>
-                <button>Submit</button>
+                <button>Create</button>
             </span>
+
         </form>
     </span>
 {% endblock content %}

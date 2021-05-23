@@ -1,0 +1,29 @@
+.helper-text {
+    display: none;
+}
+
+.helper-identifier {
+    width: 100%;
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    border: 1px solid royalblue;
+    border-radius: 25px;
+
+    margin-left: 5px;
+}
+
+.help:hover {
+    cursor: help;
+}
+
+.help:hover > .helper-text {
+    display: inline-block;
+
+    border: 1px solid royalblue;
+    border-radius: 25px;
+
+    padding: 5px 20px;
+    margin-bottom: 10px;
+}

@@ -8,6 +8,10 @@ class PollForm(forms.ModelForm):
         model = Poll
         fields = ('name', 'telemetry')
 
+        help_texts = {
+            'telemetry': 'Enables telemetry for this Poll'
+        }
+
 
 class AnswerForm(forms.ModelForm):
     """
