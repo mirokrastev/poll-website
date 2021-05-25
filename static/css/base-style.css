@@ -2,6 +2,14 @@ body {
     background-color: burlywood;
 }
 
+#settings-anchor {
+    border-right: 2px solid rgba(0,0,0,.5);
+}
+
+#settings-anchor:hover {
+    cursor: pointer;
+}
+
 #footer {
     position: fixed;
     bottom: 0;
@@ -16,6 +24,7 @@ body {
 }
 
 .footer-link:hover {
+    cursor: pointer;
     color: navajowhite;
     text-decoration: underline;
 }

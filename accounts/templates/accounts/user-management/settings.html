@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Settings{% endblock title %}
+
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/settings-style.css' %}">
+{% endblock links %}
+
+{% block content %}
+    <div id="settings">
+        <p id="username" style="border-bottom: 1px solid rgba(0, 0, 0, .5)">{{ user }}</p>
+
+        <div id="settings-container">
+            <! -- TODO: Implement -->
+            <span class="setting-wrapper">
+                Change password from
+                <a href="#">here</a>
+            </span>
+            <br>
+            <span class="setting-wrapper">
+                Delete profile from
+                <a href="{% url 'accounts:delete_user' %}">here</a>
+            </span>
+        </div>
+
+{#        <div id="poll-container">#}
+{#            {% include 'poll/render_poll_viewer.html' %}#}
+{#        </div>#}
+    </div>
+{% endblock content %}

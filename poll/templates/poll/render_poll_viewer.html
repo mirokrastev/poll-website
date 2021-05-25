@@ -1,0 +1,19 @@
+{% if not polls %}
+    <div style="margin: 50px">
+        <p>There are no polls right now.</p>
+    </div>
+{% else %}
+    {% for poll in polls %}
+        <div class="poll">
+            <span>{{ poll }}</span>
+            <span>
+                <a href="{% url 'poll:view_poll' poll.id poll %}">View Poll</a>
+            </span>
+        </div>
+    {% endfor %}
+    {% if is_paginated %}
+        <div>
+            {% include 'pagination/paginator.html' %}
+        </div>
+    {% endif %}
+{% endif %}

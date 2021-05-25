@@ -1,0 +1,19 @@
+#settings {
+    width: 50%;
+    margin: 20px auto;
+}
+
+#username {
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+#settings-container {
+    width: 50%;
+    margin: auto;
+}
+
+#poll-container {
+    width: 50%;
+    margin: auto;
+}

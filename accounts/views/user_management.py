@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic.base import ContextMixin
 from poll.models.poll_models import Poll
@@ -24,3 +24,17 @@ class UserProfileView(ContextMixin, View):
         context = super().get_context_data()
         context['polls'] = self.polls
         return context
+
+
+class DeleteUserView(View):
+    def get(self, request, *args, **kwargs):
+        return render(self.request, 'accounts/delete.html')
+
+    def post(self, request, *args, **kwargs):
+        self.request.user.delete()
+        return redirect('home')
+
+
+class SettingsView(View):
+    def get(self, request, *args, **kwargs):
+        return render(self.request, 'accounts/user-management/settings.html')

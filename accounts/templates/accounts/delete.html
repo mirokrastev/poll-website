@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete profile{% endblock title %}
+
+{% block links %}
+    <style>
+        #buttons {
+            display: inline-block;
+        }
+    </style>
+{% endblock links %}
+
+{% block content %}
+    <!-- TODO: Style the page. -->
+    <p>WAIT!</p>
+    <p>This is irreversible. All your will be deleted!</p>
+
+    <span id="buttons">
+        <a onclick="window.history.back();">Back</a>
+        <form method="POST" action="{% url 'accounts:delete_user' %}">
+            {% csrf_token %}
+            <a onclick="parentNode.submit();" style="color: darkred;">Delete</a>
+        </form>
+    </span>
+{% endblock content %}

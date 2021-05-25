@@ -1,16 +1,11 @@
 <li class="nav-item">
-    <form method="POST" action="{% url 'accounts:logout' %}">
-        {% csrf_token %}
-        <a style="cursor: pointer;" id="logoutAnchor" class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
-    </form>
+    <!-- TODO: CHANGE WITH URL! -->
+    <a id="settings-anchor" class="nav-link" href="/accounts/settings">Settings</a>
 </li>
 
-{% block scripts %}
-    <script>
-        document.getElementById('logoutAnchor')
-        .addEventListener('click', (e) => {
-            e.preventDefault();
-            e.target.parentElement.submit();
-        })
-    </script>
-{% endblock scripts %}
+<li class="nav-item">
+    <form method="POST" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <a style="cursor: pointer;" id="logout-anchor" class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+    </form>
+</li>
