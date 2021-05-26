@@ -1,0 +1,19 @@
+.wrapper {
+    width: 50%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#buttons {
+    display: inline-block;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+#buttons > form {
+    display: inline-block;
+}
+
+.button {
+    margin: 10px;
+}

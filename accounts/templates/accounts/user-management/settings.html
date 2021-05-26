@@ -9,13 +9,13 @@
 
 {% block content %}
     <div id="settings">
-        <p id="username" style="border-bottom: 1px solid rgba(0, 0, 0, .5)">{{ user }}</p>
+        <p id="username">{{ user }}</p>
+        <hr>
 
-        <div id="settings-container">
-            <! -- TODO: Implement -->
-            <span class="setting-wrapper">
+        <div class="wrapper">
+            <span id="settings">
                 Change password from
-                <a href="#">here</a>
+                <a href="{% url 'accounts:change_password' %}">here</a>
             </span>
             <br>
             <span class="setting-wrapper">
@@ -23,7 +23,7 @@
                 <a href="{% url 'accounts:delete_user' %}">here</a>
             </span>
         </div>
-
+    <! -- TODO: IMPLEMENT -->
 {#        <div id="poll-container">#}
 {#            {% include 'poll/render_poll_viewer.html' %}#}
 {#        </div>#}

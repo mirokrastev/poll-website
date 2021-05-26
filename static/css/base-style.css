@@ -28,3 +28,9 @@ body {
     color: navajowhite;
     text-decoration: underline;
 }
+
+/* Wrapper class that centers the element */
+.wrapper {
+    width: 50%;
+    margin: auto;
+}
