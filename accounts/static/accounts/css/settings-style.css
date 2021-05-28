@@ -1,8 +1,15 @@
-#settings {
-    width: 50%;
-    margin: 20px auto;
-}
-
 #username {
     text-align: center;
+}
+
+#settings-wrapper {
+    float: left;
+}
+
+#poll-wrapper {
+    float: right;
+}
+
+article > hr {
+    margin: 10px;
 }

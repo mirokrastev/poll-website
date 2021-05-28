@@ -13,8 +13,9 @@ class UserProfileView(ContextMixin, View):
         self.polls = None
 
     def dispatch(self, request, *args, **kwargs):
-        if self.request.method != 'GET' or self.kwargs['user'] != self.request.user.username:
+        if not self.request.method == 'GET':
             raise Http404
+        # TODO: Paginate
         self.polls = Poll.objects.filter(user=self.request.user)
         return super().dispatch(self.request, *args, **kwargs)
 
@@ -51,8 +52,3 @@ class DeleteUserView(View):
     def post(self, request, *args, **kwargs):
         self.request.user.delete()
         return redirect('home')
-
-
-class SettingsView(View):
-    def get(self, request, *args, **kwargs):
-        return render(self.request, 'accounts/user-management/settings.html')

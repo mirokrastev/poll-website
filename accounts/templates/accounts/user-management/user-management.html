@@ -1,3 +1,35 @@
-{% extends 'poll/polls_viewer.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}My Polls{% endblock title %}
+{% block title %}My account{% endblock title %}
+
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/settings-style.css' %}">
+{% endblock links %}
+
+{% block content %}
+    <section class="wrapper">
+        <p id="username">{{ user }}</p>
+        <hr>
+
+        <article id="settings-wrapper">
+            <h3>Account Settings</h3>
+            <hr>
+            <span>
+                Change password from
+                <a href="{% url 'accounts:change_password' %}">here</a>
+            </span>
+            <br>
+            <span>
+                Delete profile from
+                <a href="{% url 'accounts:delete_user' %}">here</a>
+            </span>
+        </article>
+
+        <article id="poll-wrapper">
+            <h3>My Polls</h3>
+            <hr>
+            {% include 'poll/render_poll_viewer.html' %}
+        </article>
+    </section>
+{% endblock content %}
