@@ -1,5 +1,10 @@
 # Poll System
 
+## Requirements
+This project requires Python >= 3.8 to work.<br>
+You need to install the dependencies from ```requirements.txt``` and configure ```.env``` file
+<br><br>
+
 ## Features
 Registered users can create polls with multiple answers to vote on.<br>
 Other registered users can view and vote on particular answer.<br>
