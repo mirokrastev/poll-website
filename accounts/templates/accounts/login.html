@@ -8,12 +8,31 @@
 {% endblock links %}
 
 {% block content %}
-    <div id="login-container">
-        {% if error %}<div class="error">{{ error }}</div>{% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button>Submit</button>
-        </form>
+    <div id="rel-container">
+        {% if form.errors %}
+            <div id="errors">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="error">
+                    {{ error }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <div id="auth-container">
+            <form method="post">
+                <h2 id="auth-header">LOGIN</h2>
+                {% csrf_token %}
+                {% for field in form %}
+                    <p>
+                        {{ field.label }}
+                        {{ field }}
+                    </p>
+                {% endfor %}
+                <button>Submit</button>
+            </form>
+        </div>
     </div>
 {% endblock content %}

@@ -26,8 +26,8 @@ class LoginView(FormView):
         user = authenticate(self.request.user, **{'username': username, 'password': password})
 
         if not user:
-            context = {'form': form, 'error': 'Incorrect credentials!'}
-            return self.render_to_response(context)
+            form.add_error('password', 'Incorrect credentials!')
+            return self.form_invalid(form)
 
         login(self.request, user)
         return redirect('home')

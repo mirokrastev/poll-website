@@ -1,27 +1,50 @@
-#login-container {
+#rel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+
     text-align: center;
-
-    width: 30%;
-    height: 100px;
-
-    margin: auto;
-    position: absolute;
-    top:0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    color: white;
 }
 
-#register-container {
-    text-align: center;
+#auth-header {
+    display: inline-block;
+    margin-bottom: 30px;
+}
 
-    width: 30%;
-    height: 100px;
+#auth-container {
+    padding: 25px;
 
-    margin: auto;
-    position: absolute;
-    top:-250px;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    background-color: rgba(0, 0, 0, .7);
+    border-radius: 5px;
+    width: 20%;
+}
+
+#auth-container input {
+    display: block;
+    margin: 10px auto;
+    background-color: rgba(0, 0, 0, 1);
+    border: none;
+    border-bottom: 2px solid gray;
+    color: white;
+}
+
+#auth-container button {
+    margin: 10px;
+    color: white;
+    background-color: red;
+    opacity: 0.7;
+    border: 1px solid rgba(0, 0, 0, 1);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+#errors {
+    position: relative;
+    right: 100px;
+    padding: 10px;
+
+    background-color: rgba(0, 0, 0, .7);
+    border-radius: 5px;
 }

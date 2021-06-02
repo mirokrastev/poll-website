@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.password_validation import MinimumLengthValidator
 
 
 class LoginForm(forms.Form):
@@ -7,4 +6,7 @@ class LoginForm(forms.Form):
                                error_messages={
                                    'min_length': 'Your username must be at least 4 characters long.'
                                })
-    password = forms.CharField(widget=forms.PasswordInput(), required=True, validators=[MinimumLengthValidator])
+    password = forms.CharField(widget=forms.PasswordInput(), min_length=8, required=True,
+                               error_messages={
+                                   'min_length': 'Your password must be at least 8 characters long.'
+                               })
