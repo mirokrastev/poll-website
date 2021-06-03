@@ -13,7 +13,7 @@
     {% endfor %}
     {% if is_paginated %}
         <div>
-            {% include 'pagination/paginator.html' %}
+            {% include 'pagination/paginator.html' with page_obj=polls %}
         </div>
     {% endif %}
 {% endif %}

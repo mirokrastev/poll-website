@@ -1,32 +1,33 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import FormView
+from utils.mixins import PaginateObjectMixin
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.generic.base import ContextMixin
 from poll.models.poll_models import Poll
 from django.http import Http404
 
 
-class UserProfileView(ContextMixin, View):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.polls = None
+class UserProfileView(PaginateObjectMixin, ContextMixin, View):
+    paginate_by = 10
 
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'GET':
             raise Http404
-        # TODO: Paginate
-        self.polls = Poll.objects.filter(user=self.request.user)
         return super().dispatch(self.request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return render(self.request, 'accounts/user-management/user-management.html', context)
+        page = self.request.GET.get('page', 1)
+        paginator, polls = self.paginate(Poll.objects.filter(user=self.request.user), page)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context['polls'] = self.polls
-        return context
+        context = {
+            'polls': polls,
+            'paginator': paginator,
+            'is_paginated': polls.has_other_pages()
+        }
+
+        context = self.get_context_data(**context)
+        return render(self.request, 'accounts/user-management/user-management.html', context)
 
 
 class ChangePasswordView(FormView):
