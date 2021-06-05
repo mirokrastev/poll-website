@@ -8,6 +8,7 @@ from poll.common import PollDataMixin, PollTrackUsersMixin
 from poll.mixins import PollObjectMixin, InitializePollMixin
 from poll.forms import PollForm, answer_modelformset, CommentForm, VoteForm
 from django.http import JsonResponse, Http404
+from poll.models import UserPollTelemetry
 from poll.models.poll_models import Poll, Answer, Vote, Comment
 from utils.base import BaseRedirectFormView
 
@@ -189,6 +190,27 @@ class PollComment(InitializePollMixin, BaseRedirectFormView):
 
 
 class PollDelete(InitializePollMixin, DeleteView):
-    admin_only = True
+    owner_only = True
     success_url = reverse_lazy('poll:poll_viewer')
     template_name = 'poll/single-poll/delete.html'
+
+
+# TODO: Implement View. Also do some code refactor.
+class PollTelemetry(InitializePollMixin, View):
+    owner_only = True
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.request.method == 'GET':
+            raise Http404
+        return super().dispatch(self.request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        telemetry_object = UserPollTelemetry.objects.get(poll=self.object)
+        context_kwargs = {
+            'poll': self.object,
+            'total_users': len(telemetry_object.users),
+            'users': telemetry_object.users
+        }
+
+        context = self.get_context_data(**context_kwargs)
+        return render(self.request, '', context)

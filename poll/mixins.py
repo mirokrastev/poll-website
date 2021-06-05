@@ -18,7 +18,7 @@ class PollObjectMixin(SingleObjectMixin):
 
 
 class InitializePollMixin(PollObjectMixin, PollTrackUsersMixin):
-    admin_only = False
+    owner_only = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,7 +34,7 @@ class InitializePollMixin(PollObjectMixin, PollTrackUsersMixin):
         """
 
         self.object = self.get_object()
-        if self.admin_only and self.object.user != self.request.user:
+        if self.owner_only and self.object.user != self.request.user:
             raise Http404
 
         return super().dispatch(request, *args, **kwargs)

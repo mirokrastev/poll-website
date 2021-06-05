@@ -1,38 +1,3 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'accounts/shared/auth-page.html' %}
 
 {% block title %}Register{% endblock title %}
-
-{% block links %}
-    <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/style.css' %}">
-{% endblock links %}
-
-{% block content %}
-    <div id="rel-container">
-        {% if form.errors %}
-            <div id="errors">
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <div class="error">
-                    {{ error }}
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            </div>
-        {% endif %}
-
-        <div id="auth-container">
-            <form method="post">
-                <h2 id="auth-header">REGISTER</h2>
-                {% csrf_token %}
-                {% for field in form %}
-                    <p>
-                        {{ field.label }}
-                        {{ field }}
-                    </p>
-                {% endfor %}
-                <button>Submit</button>
-            </form>
-        </div>
-    </div>
-{% endblock content %}

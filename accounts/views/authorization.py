@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView
 from django.contrib.auth.forms import UserCreationForm
@@ -16,6 +17,12 @@ class RegisterView(FormView):
         login(self.request, user)
         return redirect('home')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({'action_url': reverse('accounts:register'),
+                        'auth_header': 'REGISTER'})
+        return context
+
 
 class LoginView(FormView):
     form_class = LoginForm
@@ -31,6 +38,12 @@ class LoginView(FormView):
 
         login(self.request, user)
         return redirect('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({'action_url': reverse('accounts:login'),
+                        'auth_header': 'LOGIN'})
+        return context
 
 
 class LogoutView(View):

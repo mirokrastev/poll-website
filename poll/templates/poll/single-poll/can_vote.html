@@ -2,6 +2,6 @@
     <form method="POST" action="{% url 'poll:vote_poll' poll.id poll %}">
         {% csrf_token %}
         {{ form }}
-        <button class="btn btn-primary">Submit</button>
+        <button class="btn btn-primary">Vote</button>
     </form>
 </div>

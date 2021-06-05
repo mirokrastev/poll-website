@@ -1,17 +1,24 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Poll Deletion{% endblock title %}
+{% block title %}Delete profile{% endblock title %}
+
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/delete-style.css' %}">
+{% endblock links %}
 
 {% block content %}
-    <div class="container">
-        <p>Are you sure you want to delete this Poll?</p>
-        <p>It's irreversible!</p>
-        <span>
-            <form method="POST">
+    <div class="wrapper">
+        <h1>WAIT!</h1>
+        <h3>This is irreversible. Everything related to your Poll will be deleted!</h3>
+        <hr>
+
+        <span id="buttons">
+            <a class="button" onclick="window.history.back();">Back</a>
+            <form method="POST" action="{% url 'poll:delete_poll' poll.id poll %}">
                 {% csrf_token %}
-                <button style="display: inline-block">Delete</button>
+                <a class="button" onclick="parentNode.submit();" style="color: darkred;">Delete</a>
             </form>
-            <a href="{% url 'poll:view_poll' poll.id poll %}"><button>Back</button></a>
         </span>
     </div>
 {% endblock content %}

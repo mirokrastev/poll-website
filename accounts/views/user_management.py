@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView
 from utils.mixins import PaginateObjectMixin
@@ -34,7 +35,7 @@ class ChangePasswordView(FormView):
     # This is a Django form for changing password. It it fairly easy to do it manually,
     # But I prefer to use the built-in forms.
     form_class = PasswordChangeForm
-    template_name = 'accounts/change-password.html'
+    template_name = 'accounts/user-management/change-password.html'
 
     def form_valid(self, form):
         form.save()
@@ -45,10 +46,16 @@ class ChangePasswordView(FormView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({'action_url': reverse('accounts:change_password'),
+                        'auth_header': 'CHANGE'})
+        return context
+
 
 class DeleteUserView(View):
     def get(self, request, *args, **kwargs):
-        return render(self.request, 'accounts/delete.html')
+        return render(self.request, 'accounts/user-management/delete.html')
 
     def post(self, request, *args, **kwargs):
         self.request.user.delete()
