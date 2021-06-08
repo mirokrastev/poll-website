@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Poll Statistics{% endblock title %}
+
+{% block content %}
+    <section class="wrapper">
+        <p>Total users that have viewed the Poll: {{ total_users_count }}</p>
+        <p>Logged in users: {{ users_count }}</p>
+        <p>Anonymous users: {{ anonymous_users_count }}</p>
+
+        <hr>
+
+        <article id="users">
+            <h2>All Users</h2>
+            {% for user in users %}
+                <p>{{ user }}</p>
+            {% endfor %}
+            {% if is_paginated %}
+                <div>
+                    {% include 'pagination/paginator.html' with page_obj=users %}
+                </div>
+            {% endif %}
+        </article>
+    </section>
+{% endblock content %}

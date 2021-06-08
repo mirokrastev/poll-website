@@ -1,6 +1,6 @@
 from django.contrib import admin
 from poll.models.poll_models import Poll, Answer, Vote, Comment
-from poll.models import UserPollTelemetry
+from poll.models import UsersPollTelemetry
 
 
 class AnswerInline(admin.TabularInline):
@@ -10,7 +10,7 @@ class AnswerInline(admin.TabularInline):
 
 
 class UserPollTelemetryInline(admin.TabularInline):
-    model = UserPollTelemetry
+    model = UsersPollTelemetry
     extra = 1
     max_num = 1
     can_delete = False

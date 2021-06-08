@@ -1,3 +1,4 @@
+{% if can_vote %}
 <div id="pollAnswers">
     <form method="POST" action="{% url 'poll:vote_poll' poll.id poll %}">
         {% csrf_token %}
@@ -5,3 +6,8 @@
         <button class="btn btn-primary">Vote</button>
     </form>
 </div>
+{% else %}
+<div id="pollAnswers">
+    {{ form }}
+</div>
+{% endif %}

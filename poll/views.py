@@ -6,9 +6,10 @@ from django.views.generic.base import ContextMixin
 from django.views.generic.edit import DeleteView
 from poll.common import PollDataMixin, PollTrackUsersMixin
 from poll.mixins import PollObjectMixin, InitializePollMixin
+from utils.mixins import PaginateObjectMixin
 from poll.forms import PollForm, answer_modelformset, CommentForm, VoteForm
 from django.http import JsonResponse, Http404
-from poll.models import UserPollTelemetry
+from poll.models import UsersPollTelemetry
 from poll.models.poll_models import Poll, Answer, Vote, Comment
 from utils.base import BaseRedirectFormView
 
@@ -21,14 +22,14 @@ class HomeView(View):
 class PollViewer(ListView):
     paginate_by = 10
     model = Poll
-    template_name = 'poll/polls_viewer.html'
+    template_name = 'poll/poll-viewer-page/polls-viewer.html'
     context_object_name = 'polls'
 
 
 class CreatePoll(ContextMixin, View):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        return render(self.request, 'poll/create_poll.html', context)
+        return render(self.request, 'poll/create-poll.html', context)
 
     def post(self, request, *args, **kwargs):
         form = PollForm(self.request.POST)
@@ -116,7 +117,7 @@ class SinglePollViewer(PollObjectMixin, PollTrackUsersMixin, PollDataMixin, View
             return JsonResponse(percent_obj)
 
         context = self.get_context_data()
-        return render(self.request, 'poll/single-poll/view_poll.html', context)
+        return render(self.request, 'poll/single-poll-page/view-poll.html', context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -192,11 +193,10 @@ class PollComment(InitializePollMixin, BaseRedirectFormView):
 class PollDelete(InitializePollMixin, DeleteView):
     owner_only = True
     success_url = reverse_lazy('poll:poll_viewer')
-    template_name = 'poll/single-poll/delete.html'
+    template_name = 'poll/single-poll-page/delete.html'
 
 
-# TODO: Implement View. Also do some code refactor.
-class PollTelemetry(InitializePollMixin, View):
+class PollTelemetry(InitializePollMixin, PaginateObjectMixin, View):
     owner_only = True
 
     def dispatch(self, request, *args, **kwargs):
@@ -205,12 +205,26 @@ class PollTelemetry(InitializePollMixin, View):
         return super().dispatch(self.request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        telemetry_object = UserPollTelemetry.objects.get(poll=self.object)
+        telemetry_object = UsersPollTelemetry.objects.get(poll=self.object)
+
+        users_queryset = telemetry_object.users.all()
+        users_count = len(users_queryset)
+        anonymous_users_count = telemetry_object.anonymous_users.count()
+
+        page = self.request.GET.get('page', 1)
+        paginator, paginated_users_queryset = self.paginate(users_queryset, page)
+
         context_kwargs = {
             'poll': self.object,
-            'total_users': len(telemetry_object.users),
-            'users': telemetry_object.users
+            'paginator': paginator,
+
+            'total_users_count': users_count + anonymous_users_count,
+            'anonymous_users_count': anonymous_users_count,
+            'users_count': users_count,
+
+            'users': paginated_users_queryset,
+            'is_paginated': paginated_users_queryset.has_other_pages()
         }
 
         context = self.get_context_data(**context_kwargs)
-        return render(self.request, '', context)
+        return render(self.request, 'poll/single-poll-page/poll-telemetry.html', context)

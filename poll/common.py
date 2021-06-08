@@ -1,4 +1,4 @@
-from poll.models import UserPollTelemetry
+from poll.models import UsersPollTelemetry, AnonymousUserPollTelemetry
 
 
 class PollDataMixin:
@@ -21,9 +21,30 @@ class PollTrackUsersMixin:
     """
 
     def dispatch(self, request, *args, **kwargs):
-        if self.object.telemetry and self.request.user.is_authenticated:
-            telemetry = UserPollTelemetry.objects.get(poll=self.object)
-            telemetry.users.add(self.request.user)
-            telemetry.save()
+        """
+        Ignore everything related to Telemetry if "telemetry" field is False.
+        """
+        if not self.object.telemetry:
+            return super().dispatch(self.request, *args, **kwargs)
+
+        telemetry = UsersPollTelemetry.objects.get(poll=self.object)
+
+        if self.request.user.is_authenticated:
+            self._authenticated_telemetry(telemetry)
+        else:
+            self._anonymous_telemetry(telemetry)
 
         return super().dispatch(self.request, *args, **kwargs)
+
+    def _authenticated_telemetry(self, telemetry):
+        telemetry.users.add(self.request.user)
+        telemetry.save()
+
+    def _anonymous_telemetry(self, telemetry):
+        client_ip = self.request.META['REMOTE_ADDR']
+        address_object = AnonymousUserPollTelemetry.objects.get_or_create(
+            anonymous_user=client_ip
+        )[0]
+
+        telemetry.anonymous_users.add(address_object)
+        telemetry.save()

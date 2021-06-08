@@ -1,0 +1,19 @@
+<div id="comments">
+    {% if comment_form %}
+        <div id="comment-form" class="form-group">
+            <form method="POST" action="{% url 'poll:comment_poll' poll.id poll %}">
+                {% csrf_token %}
+                {{ comment_form }}
+                <br>
+                <button class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    {% endif %}
+    <div class="comment">
+        {% for comment in comments %}
+            <div>
+                {{ comment.user }}: {{ comment.comment }}
+            </div>
+        {% endfor %}
+    </div>
+</div>

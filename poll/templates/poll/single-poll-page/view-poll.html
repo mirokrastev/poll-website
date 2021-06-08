@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Poll{% endblock title %}
+
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{% static 'poll/css/single-poll-style.css' %}">
+{% endblock links %}
+
+{% block content %}
+    <div id="wrapper">
+        {% include 'poll/single-poll-page/components/render-poll.html' %}
+        {% include 'poll/single-poll-page/components/comments.html' %}
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    <script type="module" src="{% static 'poll/js/single-poll-script.js' %}"></script>
+{% endblock %}

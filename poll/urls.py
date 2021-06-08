@@ -1,5 +1,5 @@
 from django.urls import path
-from poll.views import PollViewer, CreatePoll, PollComment, SinglePollViewer, PollVote, PollDelete
+from poll.views import PollViewer, CreatePoll, PollComment, SinglePollViewer, PollVote, PollDelete, PollTelemetry
 from django.contrib.auth.decorators import login_required
 
 app_name = 'poll'
@@ -9,7 +9,8 @@ urlpatterns = [
     path('create', login_required(CreatePoll.as_view()), name='create_poll'),
 
     path('<int:poll_id>/<str:poll>', SinglePollViewer.as_view(), name='view_poll'),
-    # TODO: Implement page and url - path('<int:poll_id>/<str:poll>/statistics', None, name='view_poll_telemetry'),
+    path('<int:poll_id>/<str:poll>/statistics',
+         login_required(PollTelemetry.as_view()), name='view_poll_telemetry'),
 
     path('<int:poll_id>/<str:poll>/delete', login_required(PollDelete.as_view()), name='delete_poll'),
     path('<int:poll_id>/<str:poll>/vote', login_required(PollVote.as_view()), name='vote_poll'),

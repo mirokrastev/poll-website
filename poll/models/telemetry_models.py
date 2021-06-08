@@ -11,16 +11,29 @@ class BasePollTelemetry(models.Model):
 
     poll = models.ForeignKey(db_index=True, to=Poll, on_delete=models.CASCADE)
 
-    class Meta:
-        abstract = True
-
-
-class UserPollTelemetry(BasePollTelemetry):
-    users = models.ManyToManyField(db_index=True, to=get_user_model())
-
     def __str__(self):
         return str(self.poll)
 
     class Meta:
-        verbose_name = 'Telemetry'
-        verbose_name_plural = 'Telemetry'
+        abstract = True
+
+
+class AnonymousUserPollTelemetry(models.Model):
+    """
+    To "store" the anonymous users that have viewed the Poll,
+    I need to store their IP Addresses. It will NEVER be displayed outside the admin panel.
+    """
+
+    anonymous_user = models.GenericIPAddressField()
+
+    def __str__(self):
+        return self.anonymous_user
+
+
+class UsersPollTelemetry(BasePollTelemetry):
+    users = models.ManyToManyField(db_index=True, to=get_user_model())
+    anonymous_users = models.ManyToManyField(db_index=True, to=AnonymousUserPollTelemetry)
+
+    class Meta:
+        verbose_name = 'PollTelemetry'
+        verbose_name_plural = 'PollTelemetry'
