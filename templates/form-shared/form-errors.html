@@ -1,0 +1,11 @@
+{% if form.errors %}
+    <div id="errors">
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="error">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

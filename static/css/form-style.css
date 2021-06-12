@@ -8,20 +8,21 @@
     color: white;
 }
 
-#auth-header {
+#container-header {
     display: inline-block;
     margin-bottom: 30px;
 }
 
-#auth-container {
+#container-content {
     padding: 25px;
 
     background-color: rgba(0, 0, 0, .7);
     border-radius: 5px;
-    width: 20%;
+    width: 350px;
+    min-width: 300px;
 }
 
-#auth-container input {
+#container-content input {
     display: block;
     margin: 10px auto;
     background-color: rgba(0, 0, 0, 1);
@@ -30,7 +31,7 @@
     color: white;
 }
 
-#auth-container button {
+#container-content button {
     margin: 10px;
     color: white;
     background-color: red;
