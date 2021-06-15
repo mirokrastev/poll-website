@@ -1,9 +1,10 @@
+from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView
+
 from utils.mixins import PaginateObjectMixin
-from django.contrib.auth.forms import PasswordChangeForm
 from django.views.generic.base import ContextMixin
 from poll.models.poll_models import Poll
 from django.http import Http404
@@ -15,6 +16,7 @@ class UserProfileView(PaginateObjectMixin, ContextMixin, View):
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'GET':
             raise Http404
+        self.request.session['secure'] = True
         return super().dispatch(self.request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -28,14 +30,19 @@ class UserProfileView(PaginateObjectMixin, ContextMixin, View):
         }
 
         context = self.get_context_data(**context)
+
+        api_call = self.request.GET.get('api', None) == 'true'
+
+        if api_call:
+            return render(self.request, 'accounts/user-management/spa-components/home-component.html', context)
         return render(self.request, 'accounts/user-management/user-management.html', context)
 
 
-class ChangePasswordView(FormView):
+class ChangePasswordHybridView(FormView):
     # This is a Django form for changing password. It it fairly easy to do it manually,
     # But I prefer to use the built-in forms.
     form_class = PasswordChangeForm
-    template_name = 'accounts/user-management/change-password.html'
+    template_name = 'accounts/user-management/spa-components/change-password-component.html'
 
     def form_valid(self, form):
         form.save()
@@ -53,9 +60,9 @@ class ChangePasswordView(FormView):
         return context
 
 
-class DeleteUserView(View):
+class DeleteUserHybridView(View):
     def get(self, request, *args, **kwargs):
-        return render(self.request, 'accounts/user-management/delete.html')
+        return render(self.request, 'accounts/user-management/spa-components/delete-component.html')
 
     def post(self, request, *args, **kwargs):
         self.request.user.delete()

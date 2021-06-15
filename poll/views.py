@@ -228,3 +228,6 @@ class PollTelemetry(InitializePollMixin, PaginateObjectMixin, View):
 
         context = self.get_context_data(**context_kwargs)
         return render(self.request, 'poll/single-poll-page/poll-telemetry.html', context)
+
+
+# TODO: WRITE OPTION TO ENABLE TELEMETRY FOR YOUR PROFILE AND IGNORE POLL TELEMETRY SETTINGS

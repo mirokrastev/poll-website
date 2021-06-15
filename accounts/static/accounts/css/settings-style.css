@@ -1,3 +1,4 @@
+/* CSS for Settings hybrid component */
 #username {
     text-align: center;
 }
@@ -11,5 +12,30 @@
 }
 
 article > hr {
+    margin: 10px;
+}
+
+#settings-wrapper div {
+    margin: 10px;
+}
+
+/* CSS for Delete hybrid component. Also applying some of the Settings style */
+#delete-wrapper {
+    width: 50%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#buttons {
+    display: inline-block;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+#buttons > form {
+    display: inline-block;
+}
+
+.button {
     margin: 10px;
 }

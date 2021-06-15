@@ -5,31 +5,16 @@
 
 {% block links %}
     <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/settings-style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/form-style.css' %}">
 {% endblock links %}
 
 {% block content %}
-    <section class="wrapper">
-        <p id="username">{{ user }}</p>
-        <hr>
-
-        <article id="settings-wrapper">
-            <h3>Account Settings</h3>
-            <hr>
-            <span>
-                Change password from
-                <a href="{% url 'accounts:change_password' %}">here</a>
-            </span>
-            <br>
-            <span>
-                Delete profile from
-                <a href="{% url 'accounts:delete_user' %}">here</a>
-            </span>
-        </article>
-
-        <article id="poll-wrapper">
-            <h3>My Polls</h3>
-            <hr>
-            {% include 'poll/poll-viewer-page/render-poll-viewer.html' %}
-        </article>
-    </section>
+    <div>
+    {% include 'accounts/user-management/spa-components/home-component.html' %}
+    </div>
 {% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'accounts/js/user-management-spa.js' %}"
+    type="module"></script>
+{% endblock scripts %}

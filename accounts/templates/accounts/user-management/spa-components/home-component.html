@@ -1,0 +1,27 @@
+<section class="wrapper">
+    <p id="username">{{ user }}</p>
+    <hr>
+
+    <article id="settings-wrapper">
+        <h3>Account Settings</h3>
+        <hr>
+        <div>
+            Change password from
+            <a class="hybrid" href="{% url 'accounts:change_password' %}">here</a>
+        </div>
+        <div>
+            Delete profile from
+            <a class="hybrid" href="{% url 'accounts:delete_user' %}">here</a>
+        </div>
+{#        <div>#}
+{#            Change telemetry settings from#}
+{#            <a class="hybrid" href="#">here</a>#}
+{#        </div>#}
+    </article>
+
+    <article id="poll-wrapper">
+        <h3>My Polls</h3>
+        <hr>
+        {% include 'poll/poll-viewer-page/render-poll-viewer.html' %}
+    </article>
+</section>

@@ -1,0 +1,13 @@
+<section class="wrapper" id="delete-wrapper">
+    <h1>WAIT!</h1>
+    <h3>This is irreversible. All your data will be deleted!</h3>
+    <hr>
+
+    <span id="buttons">
+            <a class="hybrid button" href="{% url 'accounts:my_profile' %}?api=true">Back</a>
+            <form method="POST" action="{% url 'accounts:delete_user' %}">
+                {% csrf_token %}
+                <a class="button" onclick="parentNode.submit();" style="color: darkred;">Delete</a>
+            </form>
+        </span>
+</section>
