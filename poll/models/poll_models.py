@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.text import slugify
 from utils.managers import GenericManager
 
 UserModel = get_user_model()
@@ -11,11 +10,6 @@ class Poll(models.Model):
     telemetry = models.BooleanField(default=True)
     user = models.ForeignKey(db_index=True, to=UserModel, on_delete=models.CASCADE, null=False, blank=True)
     created = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.name = slugify(self.name, allow_unicode=True)
-        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

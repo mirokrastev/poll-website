@@ -16,7 +16,6 @@ class UserProfileView(PaginateObjectMixin, ContextMixin, View):
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'GET':
             raise Http404
-        self.request.session['secure'] = True
         return super().dispatch(self.request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):

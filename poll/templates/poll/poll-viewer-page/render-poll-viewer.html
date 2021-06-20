@@ -7,7 +7,7 @@
         <div class="poll">
             <span>{{ poll }}</span>
             <span>
-                <a href="{% url 'poll:view_poll' poll.id poll.name %}">View Poll</a>
+                <a href="{% url 'poll:view_poll' poll.id poll %}">View Poll</a>
             </span>
         </div>
     {% endfor %}
