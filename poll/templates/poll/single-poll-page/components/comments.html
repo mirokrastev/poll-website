@@ -1,7 +1,7 @@
 <div id="comments">
     {% if comment_form %}
         <div id="comment-form" class="form-group">
-            <form method="POST" action="{% url 'poll:comment_poll' poll.id poll %}">
+            <form method="POST" action="{% url 'poll:comment_poll' poll.id poll|urlencode:"" %}">
                 {% csrf_token %}
                 {{ comment_form }}
                 <br>

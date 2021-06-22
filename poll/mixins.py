@@ -2,6 +2,7 @@ from django.views.generic.detail import SingleObjectMixin
 from poll.common import PollTrackUsersMixin
 from django.http import Http404
 from poll.models.poll_models import Poll
+from urllib.parse import quote, unquote
 
 
 class PollObjectMixin(SingleObjectMixin):
@@ -9,12 +10,19 @@ class PollObjectMixin(SingleObjectMixin):
 
     pk_url_kwarg = 'poll_id'
 
+    slug_field = 'str'
     slug_url_kwarg = 'poll'
-    slug_field = 'name'
-
-    query_pk_and_slug = True
 
     context_object_name = 'poll'
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        encoded_url = self.kwargs[self.slug_url_kwarg]
+        decoded_url = unquote(encoded_url)
+
+        if not obj.name == decoded_url:
+            raise Http404
+        return obj
 
 
 class InitializePollMixin(PollObjectMixin, PollTrackUsersMixin):

@@ -24,7 +24,7 @@ class AnonymousUserPollTelemetry(models.Model):
     I need to store their IP Addresses. It will NEVER be displayed outside the admin panel.
     """
 
-    anonymous_user = models.GenericIPAddressField()
+    anonymous_user = models.GenericIPAddressField(blank=True, null=True)
 
     def __str__(self):
         return self.anonymous_user

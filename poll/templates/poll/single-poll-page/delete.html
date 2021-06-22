@@ -15,7 +15,7 @@
 
         <span id="buttons">
             <a class="button" onclick="window.history.back();">Back</a>
-            <form method="POST" action="{% url 'poll:delete_poll' poll.id poll %}">
+            <form method="POST" action="{% url 'poll:delete_poll' poll.id poll|urlencode:"" %}">
                 {% csrf_token %}
                 <a class="button" onclick="parentNode.submit();" style="color: darkred;">Delete</a>
             </form>

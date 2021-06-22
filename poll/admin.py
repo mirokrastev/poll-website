@@ -14,6 +14,7 @@ class UserPollTelemetryInline(admin.TabularInline):
     extra = 1
     max_num = 1
     can_delete = False
+    readonly_fields = ('users', 'anonymous_users')
 
 
 class PollAdminPanel(admin.ModelAdmin):
