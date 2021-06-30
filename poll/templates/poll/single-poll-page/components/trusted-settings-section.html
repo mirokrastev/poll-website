@@ -1,7 +1,7 @@
-<a href="{% url 'poll:view_poll_telemetry' poll.id poll|urlencode:"" %}">
+<a href="{% url 'poll:view_poll_telemetry' poll.id poll.slug %}">
     <button class="btn btn-primary">Statistics</button>
 </a>
 
-<a id="deleteBtn" href="{% url 'poll:delete_poll' poll.id poll|urlencode:"" %}">
+<a id="deleteBtn" href="{% url 'poll:delete_poll' poll.id poll.slug %}">
     <button class="btn btn-danger">Delete</button>
 </a>

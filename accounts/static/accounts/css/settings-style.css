@@ -20,7 +20,7 @@ article > hr {
 }
 
 /* CSS for Delete hybrid component. Also applying some of the Settings style */
-#delete-wrapper {
+#delete-wrapper, #telemetry-wrapper {
     width: 50%;
     margin: 20px auto;
     text-align: center;

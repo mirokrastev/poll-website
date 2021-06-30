@@ -1,0 +1,13 @@
+<section class="wrapper" id="telemetry-wrapper">
+    <h3>Change telemetry option</h3>
+    <hr>
+    <form method="POST" action="{% url 'accounts:change_telemetry' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+    </form>
+    <hr>
+    <p>Note: You can still create Polls with telemetry, even if you disable your global Telemetry option</p>
+    <p>You can disable your Telemetry just to view one Poll and then turn it on again. You choose what happens</p>
+    <br>
+    <a class="hybrid" href="{% url 'accounts:my_profile' %}?api=true">Back</a>
+</section>

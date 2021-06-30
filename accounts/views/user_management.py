@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import FormView
-
+from accounts.forms import TelemetryForm
 from utils.mixins import PaginateObjectMixin
 from django.views.generic.base import ContextMixin
 from poll.models.poll_models import Poll
@@ -22,13 +22,13 @@ class UserProfileView(PaginateObjectMixin, ContextMixin, View):
         page = self.request.GET.get('page', 1)
         paginator, polls = self.paginate(Poll.objects.filter(user=self.request.user), page)
 
-        context = {
+        context_kwargs = {
             'polls': polls,
             'paginator': paginator,
             'is_paginated': polls.has_other_pages()
         }
 
-        context = self.get_context_data(**context)
+        context = self.get_context_data(**context_kwargs)
 
         api_call = self.request.GET.get('api', None) == 'true'
 
@@ -66,3 +66,27 @@ class DeleteUserHybridView(View):
     def post(self, request, *args, **kwargs):
         self.request.user.delete()
         return redirect('home')
+
+
+class ChangeTelemetryHybridView(ContextMixin, View):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user_profile = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.user_profile = self.request.user.user_profile
+        return super().dispatch(self.request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        context_kwargs = {
+            'form': TelemetryForm(instance=self.user_profile)
+        }
+
+        context = self.get_context_data(**context_kwargs)
+        return render(self.request, 'accounts/user-management/spa-components/'
+                                    'change-telemetry-component.html', context)
+
+    def post(self, request, *args, **kwargs):
+        self.user_profile.telemetry = not self.user_profile.telemetry
+        self.user_profile.save()
+        return redirect('accounts:my_profile')

@@ -1,4 +1,5 @@
 from django import forms
+from accounts.models import UserProfile
 
 
 class LoginForm(forms.Form):
@@ -10,3 +11,9 @@ class LoginForm(forms.Form):
                                error_messages={
                                    'min_length': 'Your password must be at least 8 characters long.'
                                })
+
+
+class TelemetryForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('telemetry',)

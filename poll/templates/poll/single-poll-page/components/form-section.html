@@ -1,6 +1,6 @@
 {% if can_vote %}
 <div id="pollAnswers">
-    <form method="POST" action="{% url 'poll:vote_poll' poll.id poll|urlencode:"" %}">
+    <form method="POST" action="{% url 'poll:vote_poll' poll.id poll.slug %}">
         {% csrf_token %}
         {{ form }}
         <button class="btn btn-primary">Vote</button>

@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
-from urllib.parse import quote
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.base import ContextMixin
@@ -95,7 +94,7 @@ class SinglePollViewer(PollObjectMixin, PollTrackUsersMixin, PollDataMixin, View
         # ORM Querying
         try:
             self.object = self.get_object()
-            self.queryset = Answer.objects.filter(poll_id=self.object.id)
+            self.queryset = Answer.objects.filter(poll=self.object)
             self.votes = Vote.objects.filter(answer__in=self.queryset)
         except Poll.DoesNotExist:
             raise Http404
@@ -157,7 +156,7 @@ class PollVote(PollObjectMixin, View):
             raise Http404
         self.object = self.get_object()
         print(self.object)
-        self.queryset = Answer.objects.filter(poll_id=self.object.id)
+        self.queryset = Answer.objects.filter(poll=self.object)
         self.user_vote = Vote.objects.get_or_none(answer__in=self.queryset,
                                                   user=self.request.user)
 
@@ -171,7 +170,7 @@ class PollVote(PollObjectMixin, View):
         option = self.queryset.get(id=option_id)
         Vote.objects.create(answer=option, user=self.request.user)
         return redirect(reverse('poll:view_poll', kwargs={'poll_id': self.object.id,
-                                                          'poll': quote(self.object, safe="")}))
+                                                          'poll': self.object.slug}))
 
 
 class PollComment(InitializePollMixin, BaseRedirectFormView):
@@ -189,7 +188,7 @@ class PollComment(InitializePollMixin, BaseRedirectFormView):
         form.poll = self.object
         form.save()
         return redirect(reverse('poll:view_poll', kwargs={'poll_id': self.object.id,
-                                                          'poll': quote(self.object, safe="")}))
+                                                          'poll': self.object.slug}))
 
 
 class PollDelete(InitializePollMixin, DeleteView):
@@ -230,5 +229,3 @@ class PollTelemetry(InitializePollMixin, PaginateObjectMixin, View):
 
         context = self.get_context_data(**context_kwargs)
         return render(self.request, 'poll/single-poll-page/poll-telemetry.html', context)
-
-# TODO: WRITE OPTION TO ENABLE TELEMETRY FOR YOUR PROFILE AND IGNORE POLL TELEMETRY SETTINGS
