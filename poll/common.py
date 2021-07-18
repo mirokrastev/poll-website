@@ -21,10 +21,8 @@ class PollTrackUsersMixin:
     """
 
     def dispatch(self, request, *args, **kwargs):
-        """
-        Ignore everything related to Telemetry if "telemetry" field is False.
-        """
-        if not self.object.telemetry or not self.request.user.user_profile.telemetry:
+        # Ignore everything related to Telemetry if "telemetry" field is False.
+        if not self.request.user.user_profile.telemetry or not self.object.telemetry:
             return super().dispatch(self.request, *args, **kwargs)
 
         telemetry = UsersPollTelemetry.objects.get(poll=self.object)

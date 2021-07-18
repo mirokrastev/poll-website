@@ -30,7 +30,9 @@ class LoginView(FormView):
 
     def form_valid(self, form):
         username, password = form.cleaned_data.values()
-        user = authenticate(self.request.user, **{'username': username, 'password': password})
+        credentials = {'username': username, 'password': password}
+
+        user = authenticate(self.request, **credentials)
 
         if not user:
             form.add_error('password', 'Incorrect credentials!')

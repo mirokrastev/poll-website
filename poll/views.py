@@ -154,8 +154,8 @@ class PollVote(PollObjectMixin, View):
     def dispatch(self, request, *args, **kwargs):
         if not self.request.method == 'POST':
             raise Http404
+
         self.object = self.get_object()
-        print(self.object)
         self.queryset = Answer.objects.filter(poll=self.object)
         self.user_vote = Vote.objects.get_or_none(answer__in=self.queryset,
                                                   user=self.request.user)
@@ -166,9 +166,8 @@ class PollVote(PollObjectMixin, View):
         return super().dispatch(self.request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        option_id = int(self.request.POST['answers'])
-        option = self.queryset.get(id=option_id)
-        Vote.objects.create(answer=option, user=self.request.user)
+        option = int(self.request.POST['answers'])
+        Vote.objects.create(answer_id=option, user=self.request.user)
         return redirect(reverse('poll:view_poll', kwargs={'poll_id': self.object.id,
                                                           'poll': self.object.slug}))
 
@@ -176,11 +175,6 @@ class PollVote(PollObjectMixin, View):
 class PollComment(InitializePollMixin, BaseRedirectFormView):
     form_class = CommentForm
     success_url = 'poll:view_poll'
-
-    def dispatch(self, request, *args, **kwargs):
-        if not self.request.user.is_authenticated:
-            raise Http404
-        return super().dispatch(self.request, *args, **kwargs)
 
     def form_valid(self, form):
         form = form.save(commit=False)
@@ -209,7 +203,7 @@ class PollTelemetry(InitializePollMixin, PaginateObjectMixin, View):
         telemetry_object = UsersPollTelemetry.objects.get(poll=self.object)
 
         users_queryset = telemetry_object.users.all()
-        users_count = len(users_queryset)
+        users_count = users_queryset.count()
         anonymous_users_count = telemetry_object.anonymous_users.count()
 
         page = self.request.GET.get('page', 1)

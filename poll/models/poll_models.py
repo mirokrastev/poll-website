@@ -10,7 +10,8 @@ class Poll(models.Model):
     name = models.CharField(db_index=True, max_length=50, null=False, blank=False)
     slug = models.SlugField(max_length=50, null=False, blank=True, allow_unicode=True)
     telemetry = models.BooleanField(default=True)
-    user = models.ForeignKey(db_index=True, to=UserModel, on_delete=models.CASCADE, null=False, blank=True)
+    user = models.ForeignKey(db_index=True, to=UserModel, on_delete=models.CASCADE,
+                             null=False, blank=True, related_name='polls')
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -25,7 +26,8 @@ class Poll(models.Model):
 
 
 class Answer(models.Model):
-    poll = models.ForeignKey(db_index=True, to=Poll, on_delete=models.CASCADE, null=False, blank=True)
+    poll = models.ForeignKey(db_index=True, to=Poll, on_delete=models.CASCADE,
+                             null=False, blank=True, related_name='answers')
     answer = models.CharField(max_length=50, null=False, blank=False)
 
     objects = GenericManager()

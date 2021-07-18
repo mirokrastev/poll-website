@@ -38,8 +38,6 @@ class UserProfileView(PaginateObjectMixin, ContextMixin, View):
 
 
 class ChangePasswordHybridView(FormView):
-    # This is a Django form for changing password. It it fairly easy to do it manually,
-    # But I prefer to use the built-in forms.
     form_class = PasswordChangeForm
     template_name = 'accounts/user-management/spa-components/change-password-component.html'
 
